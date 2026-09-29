@@ -11,8 +11,8 @@ namespace KSPWheel
     [AddComponentMenu("Physics/KSPWheel")]
     public class KSPWheelComponent : MonoBehaviour
     {
-
         #region REGION - Unity Editor Inspector Assignable Fields
+
         // These variables are set onto the KSPWheelCollider object when Start is called,
         // and updated during script OnValidate() to update any changed values from the editor inspector panel
 
@@ -35,7 +35,7 @@ namespace KSPWheel
         /// <summary>
         /// The mass of the -wheel- in... kg? tons? NFC
         /// </summary>
-        public float wheelMass = 1f;//used to simulate wheel rotational inertia for brakes and friction purposes
+        public float wheelMass = 1f; //used to simulate wheel rotational inertia for brakes and friction purposes
 
         /// <summary>
         /// The length of the suspension travel
@@ -130,7 +130,7 @@ namespace KSPWheel
         public KSPWheelFrictionType frictionModel = KSPWheelFrictionType.STANDARD;
 
         public KSPWheelSweepType sweepType = KSPWheelSweepType.RAY;
-        
+
         public bool debug = false;
 
         #endregion ENDREGION - Unity Editor Inspector Assignable Fields
@@ -156,7 +156,7 @@ namespace KSPWheel
         #endregion ENDREGION - Unity Editor Display Variables
 
         private KSPWheelCollider wheelCollider;
-        
+
         private float currentMotorTorque;
         private float currentSteer;
         private float currentBrakeTorque;
@@ -167,14 +167,14 @@ namespace KSPWheel
         {
             wheelCollider = gameObject.AddComponent<KSPWheelCollider>();
             wheelCollider.rigidbody = this.rigidBody;
-            bumpStopCollider = new GameObject("BSC-"+wheelCollider.name);
+            bumpStopCollider = new GameObject("BSC-" + wheelCollider.name);
             SphereCollider sc = bumpStopCollider.AddComponent<SphereCollider>();
             PhysicMaterial mat = new PhysicMaterial("TEST");
             mat.bounciness = 0.0f;
             mat.dynamicFriction = 0;
             mat.staticFriction = 0;
             sc.material = mat;
-            OnValidate();//manually call to set all current parameters into wheel collider object
+            OnValidate(); //manually call to set all current parameters into wheel collider object
         }
 
         private void sampleInput()
@@ -186,23 +186,59 @@ namespace KSPWheel
             float brakeInput = Input.GetKey(KeyCode.Space) ? 1 : 0;
             float forwardInput = fwd + rev;
             float turnInput = left + right;
-            if (invertSteer) { turnInput = -turnInput; }
-            if (invertMotor) { forwardInput = -forwardInput; }
+            if (invertSteer)
+            {
+                turnInput = -turnInput;
+            }
+
+            if (invertMotor)
+            {
+                forwardInput = -forwardInput;
+            }
+
             if (tankSteer)
             {
                 forwardInput = forwardInput + turnInput;
-                if (forwardInput > 1) { forwardInput = 1; }
-                if (forwardInput < -1) { forwardInput = -1; }
+                if (forwardInput > 1)
+                {
+                    forwardInput = 1;
+                }
+
+                if (forwardInput < -1)
+                {
+                    forwardInput = -1;
+                }
             }
+
             float rpm = wheelCollider.rpm;
-            if (rpm >= rpmLimit && forwardInput > 0) { forwardInput = 0; }
-            else if (rpm <= -rpmLimit && forwardInput < 0) { forwardInput = 0; }
-            currentMotorTorque = Mathf.Lerp(currentMotorTorque, forwardInput * maxMotorTorque, throttleResponse*Time.fixedDeltaTime);
-            if (forwardInput == 0 && Mathf.Abs(currentMotorTorque) < 0.25) { currentMotorTorque = 0f; }
+            if (rpm >= rpmLimit && forwardInput > 0)
+            {
+                forwardInput = 0;
+            }
+            else if (rpm <= -rpmLimit && forwardInput < 0)
+            {
+                forwardInput = 0;
+            }
+
+            currentMotorTorque = Mathf.Lerp(currentMotorTorque, forwardInput * maxMotorTorque,
+                throttleResponse * Time.fixedDeltaTime);
+            if (forwardInput == 0 && Mathf.Abs(currentMotorTorque) < 0.25)
+            {
+                currentMotorTorque = 0f;
+            }
+
             currentSteer = Mathf.Lerp(currentSteer, turnInput * maxSteerAngle, steeringResponse * Time.fixedDeltaTime);
-            if (turnInput == 0 && Mathf.Abs(currentSteer) < 0.25) { currentSteer = 0f; }
-            currentBrakeTorque = Mathf.Lerp(currentBrakeTorque, brakeInput * maxBrakeTorque, brakeResponse * Time.fixedDeltaTime);
-            if (brakeInput == 0 && currentBrakeTorque < 0.25) { currentBrakeTorque = 0f; }
+            if (turnInput == 0 && Mathf.Abs(currentSteer) < 0.25)
+            {
+                currentSteer = 0f;
+            }
+
+            currentBrakeTorque = Mathf.Lerp(currentBrakeTorque, brakeInput * maxBrakeTorque,
+                brakeResponse * Time.fixedDeltaTime);
+            if (brakeInput == 0 && currentBrakeTorque < 0.25)
+            {
+                currentBrakeTorque = 0f;
+            }
         }
 
         public void FixedUpdate()
@@ -221,14 +257,18 @@ namespace KSPWheel
             {
                 steeringTransform.localRotation = Quaternion.AngleAxis(currentSteer, steeringTransform.up);
             }
+
             if (suspensionTransform != null)
             {
-                suspensionTransform.position = transform.position - (suspensionLength - wheelCollider.compressionDistance) * transform.up;
+                suspensionTransform.position = transform.position -
+                                               (suspensionLength - wheelCollider.compressionDistance) * transform.up;
             }
+
             if (wheelTransform != null)
             {
                 wheelTransform.Rotate(wheelTransform.right, wheelCollider.perFrameRotation, Space.World);
             }
+
             Vector3 prevVel = localVelocity;
             localVelocity = wheelCollider.wheelLocalVelocity;
             localAcceleration = (prevVel - localVelocity) / Time.fixedDeltaTime;
@@ -276,15 +316,18 @@ namespace KSPWheel
         /// circles, so a sphere is used. Unlike the original WC, I've represented the wheel at top and bottom 
         /// of suspension travel
         /// </summary>
-        void OnDrawGizmosSelected()
+        private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, wheelRadius);
             Vector3 pos2 = transform.position + -transform.up * suspensionLength;
-            if (wheelCollider != null) { pos2 += transform.up * wheelCollider.compressionDistance; }
+            if (wheelCollider != null)
+            {
+                pos2 += transform.up * wheelCollider.compressionDistance;
+            }
+
             Gizmos.DrawWireSphere(pos2, wheelRadius);
             Gizmos.DrawRay(transform.position - transform.up * wheelRadius, -transform.up * suspensionLength);
         }
-
     }
 }
