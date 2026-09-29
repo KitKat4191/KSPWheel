@@ -288,27 +288,26 @@ namespace KSPWheel
 
         public void OnValidate()
         {
-            if (wheelCollider != null)
-            {
-                wheelCollider.radius = wheelRadius;
-                wheelCollider.mass = wheelMass;
-                wheelCollider.length = suspensionLength;
-                wheelCollider.spring = spring;
-                wheelCollider.damper = damper;
-                wheelCollider.motorTorque = maxMotorTorque;
-                wheelCollider.brakeTorque = maxBrakeTorque;
-                wheelCollider.forwardFrictionCoefficient = forwardFrictionCoefficient;
-                wheelCollider.sideFrictionCoefficient = sideFrictionCoefficient;
-                wheelCollider.surfaceFrictionCoefficient = surfaceFrictionCoefficient;
-                wheelCollider.sweepType = sweepType;
-                wheelCollider.frictionModel = frictionModel;
+            if (!wheelCollider) return;
+            
+            wheelCollider.radius = wheelRadius;
+            wheelCollider.mass = wheelMass;
+            wheelCollider.length = suspensionLength;
+            wheelCollider.spring = spring;
+            wheelCollider.damper = damper;
+            wheelCollider.motorTorque = maxMotorTorque;
+            wheelCollider.brakeTorque = maxBrakeTorque;
+            wheelCollider.forwardFrictionCoefficient = forwardFrictionCoefficient;
+            wheelCollider.sideFrictionCoefficient = sideFrictionCoefficient;
+            wheelCollider.surfaceFrictionCoefficient = surfaceFrictionCoefficient;
+            wheelCollider.sweepType = sweepType;
+            wheelCollider.frictionModel = frictionModel;
 
-                var sc = bumpStopCollider.GetComponent<SphereCollider>();
-                bumpStopCollider.layer = 26;
-                sc.radius = wheelRadius;
-                bumpStopCollider.transform.parent = transform;
-                bumpStopCollider.transform.localPosition = Vector3.zero;
-            }
+            var sc = bumpStopCollider.GetComponent<SphereCollider>();
+            bumpStopCollider.layer = 26;
+            sc.radius = wheelRadius;
+            bumpStopCollider.transform.parent = transform;
+            bumpStopCollider.transform.localPosition = Vector3.zero;
         }
 
         /// <summary>
