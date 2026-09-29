@@ -886,7 +886,7 @@ namespace KSPWheel
                     calcFrictionPacejka();
                     break;
                 case KspWheelFrictionType.PhysX:
-                    calcFrictionPhysx();
+                    calcFrictionPhysX();
                     break;
                 default:
                     calcFrictionStandard();
@@ -1073,7 +1073,7 @@ namespace KSPWheel
 
         // TODO
         // based on http://www.eggert.highpeakpress.com/ME485/Docs/CarSimEd.pdf
-        public void calcFrictionPhysx()
+        public void calcFrictionPhysX()
         {
             calcFrictionStandard();
         }
