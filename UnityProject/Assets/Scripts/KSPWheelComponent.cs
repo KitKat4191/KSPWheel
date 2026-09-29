@@ -223,7 +223,7 @@ namespace KSPWheel
             }
             if (suspensionTransform != null)
             {
-                suspensionTransform.position = gameObject.transform.position - (suspensionLength - wheelCollider.compressionDistance) * gameObject.transform.up;
+                suspensionTransform.position = transform.position - (suspensionLength - wheelCollider.compressionDistance) * transform.up;
             }
             if (wheelTransform != null)
             {
@@ -266,7 +266,7 @@ namespace KSPWheel
                 SphereCollider sc = bumpStopCollider.GetComponent<SphereCollider>();
                 bumpStopCollider.layer = 26;
                 sc.radius = wheelRadius;
-                bumpStopCollider.transform.parent = gameObject.transform;
+                bumpStopCollider.transform.parent = transform;
                 bumpStopCollider.transform.localPosition = Vector3.zero;
             }
         }
@@ -279,11 +279,11 @@ namespace KSPWheel
         void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(gameObject.transform.position, wheelRadius);
-            Vector3 pos2 = gameObject.transform.position + -gameObject.transform.up * suspensionLength;
-            if (wheelCollider != null) { pos2 += gameObject.transform.up * wheelCollider.compressionDistance; }
+            Gizmos.DrawWireSphere(transform.position, wheelRadius);
+            Vector3 pos2 = transform.position + -transform.up * suspensionLength;
+            if (wheelCollider != null) { pos2 += transform.up * wheelCollider.compressionDistance; }
             Gizmos.DrawWireSphere(pos2, wheelRadius);
-            Gizmos.DrawRay(gameObject.transform.position - gameObject.transform.up * wheelRadius, -gameObject.transform.up * suspensionLength);
+            Gizmos.DrawRay(transform.position - transform.up * wheelRadius, -transform.up * suspensionLength);
         }
 
     }
