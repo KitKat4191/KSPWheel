@@ -26,8 +26,8 @@ namespace KSPWheel
         private float currentBrakeTorque = 0f;
         private float currentMomentOfInertia = 1.0f * 0.5f * 0.5f * 0.5f;//moment of inertia of wheel; used for mass in acceleration calculations regarding wheel angular velocity.  MOI of a solid cylinder = ((m*r*r)/2)
         private int currentRaycastMask = ~(1 << 26);//default cast to all layers except 26; 1<<26 sets 26 to the layer; ~inverts all bits in the mask (26 = KSP WheelColliderIgnore layer)
-        private KSPWheelFrictionType currentFrictionModel = KSPWheelFrictionType.STANDARD;
-        private KSPWheelSweepType currentSweepType = KSPWheelSweepType.RAY;
+        private KspWheelFrictionType currentFrictionModel = KspWheelFrictionType.Standard;
+        private KspWheelSweepType currentSweepType = KspWheelSweepType.Ray;
         private KSPWheelFrictionCurve fwdFrictionCurve = new KSPWheelFrictionCurve(0.06f, 1.2f, 0.065f, 1.25f, 0.7f);//current forward friction curve
         private KSPWheelFrictionCurve sideFrictionCurve = new KSPWheelFrictionCurve(0.03f, 1.0f, 0.04f, 1.05f, 0.7f);//current sideways friction curve
         private bool automaticUpdates = false;
@@ -276,7 +276,7 @@ namespace KSPWheel
         /// <summary>
         /// Get/Set the suspension sweep type -- Raycast, Spherecast, or Capsulecast (enum value)
         /// </summary>
-        public KSPWheelSweepType sweepType
+        public KspWheelSweepType sweepType
         {
             get { return this.currentSweepType; }
             set { currentSweepType = value; }
@@ -285,7 +285,7 @@ namespace KSPWheel
         /// <summary>
         /// Get/Set the friction model to be used -- currently only Standard is supported.
         /// </summary>
-        public KSPWheelFrictionType frictionModel
+        public KspWheelFrictionType frictionModel
         {
             get { return currentFrictionModel; }
             set { currentFrictionModel = value; }
@@ -753,11 +753,11 @@ namespace KSPWheel
             }
             switch (currentSweepType)
             {
-                case KSPWheelSweepType.RAY:
+                case KspWheelSweepType.Ray:
                     return suspensionSweepRaycast();
-                case KSPWheelSweepType.SPHERE:
+                case KspWheelSweepType.Sphere:
                     return suspensionSweepSpherecast();
-                case KSPWheelSweepType.CAPSULE:
+                case KspWheelSweepType.Capsule:
                     return suspensionSweepCapsuleCast();
                 default:
                     return suspensionSweepRaycast();
@@ -879,13 +879,13 @@ namespace KSPWheel
         {
             switch (currentFrictionModel)
             {
-                case KSPWheelFrictionType.STANDARD:
+                case KspWheelFrictionType.Standard:
                     calcFrictionStandard();
                     break;
-                case KSPWheelFrictionType.PACEJKA:
+                case KspWheelFrictionType.Pacejka:
                     calcFrictionPacejka();
                     break;
-                case KSPWheelFrictionType.PHSYX:
+                case KspWheelFrictionType.PhysX:
                     calcFrictionPhysx();
                     break;
                 default:
@@ -1110,18 +1110,18 @@ namespace KSPWheel
 
     }
 
-    public enum KSPWheelSweepType
+    public enum KspWheelSweepType
     {
-        RAY,
-        SPHERE,
-        CAPSULE
+        Ray,
+        Sphere,
+        Capsule
     }
 
-    public enum KSPWheelFrictionType
+    public enum KspWheelFrictionType
     {
-        STANDARD,
-        PACEJKA,
-        PHSYX
+        Standard,
+        Pacejka,
+        PhysX
     }
 
 }

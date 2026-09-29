@@ -127,9 +127,9 @@ namespace KSPWheel
         /// </summary>
         public bool invertMotor = false;
 
-        public KSPWheelFrictionType frictionModel = KSPWheelFrictionType.STANDARD;
+        public KspWheelFrictionType frictionModel = KspWheelFrictionType.Standard;
 
-        public KSPWheelSweepType sweepType = KSPWheelSweepType.RAY;
+        public KspWheelSweepType sweepType = KspWheelSweepType.Ray;
 
         public bool debug = false;
 
