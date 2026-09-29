@@ -168,8 +168,8 @@ namespace KSPWheel
             wheelCollider = gameObject.AddComponent<KSPWheelCollider>();
             wheelCollider.rigidbody = this.rigidBody;
             bumpStopCollider = new GameObject("BSC-" + wheelCollider.name);
-            SphereCollider sc = bumpStopCollider.AddComponent<SphereCollider>();
-            PhysicMaterial mat = new PhysicMaterial("TEST");
+            var sc = bumpStopCollider.AddComponent<SphereCollider>();
+            var mat = new PhysicMaterial("TEST");
             mat.bounciness = 0.0f;
             mat.dynamicFriction = 0;
             mat.staticFriction = 0;
@@ -303,7 +303,7 @@ namespace KSPWheel
                 wheelCollider.sweepType = sweepType;
                 wheelCollider.frictionModel = frictionModel;
 
-                SphereCollider sc = bumpStopCollider.GetComponent<SphereCollider>();
+                var sc = bumpStopCollider.GetComponent<SphereCollider>();
                 bumpStopCollider.layer = 26;
                 sc.radius = wheelRadius;
                 bumpStopCollider.transform.parent = transform;
