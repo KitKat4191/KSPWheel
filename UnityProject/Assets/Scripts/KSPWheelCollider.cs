@@ -90,7 +90,7 @@ namespace KSPWheel
         /// <summary>
         /// Get/Set the rigidbody that the WheelCollider applies forces to.  MUST be set manually after WheelCollider component is added to a GameObject.
         /// </summary>
-        public Rigidbody rigidbody
+        public Rigidbody Rigid
         {
             get { return rigidBody; }
             set { rigidBody = value; }
