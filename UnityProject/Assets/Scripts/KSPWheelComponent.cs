@@ -253,18 +253,19 @@ namespace KSPWheel
             wheelCollider.steeringAngle = currentSteer;
             wheelCollider.brakeTorque = currentBrakeTorque;
             wheelCollider.updateWheel();
-            if (steeringTransform != null)
+            
+            if (steeringTransform)
             {
                 steeringTransform.localRotation = Quaternion.AngleAxis(currentSteer, steeringTransform.up);
             }
 
-            if (suspensionTransform != null)
+            if (suspensionTransform)
             {
                 suspensionTransform.position = transform.position -
                                                (suspensionLength - wheelCollider.compressionDistance) * transform.up;
             }
 
-            if (wheelTransform != null)
+            if (wheelTransform)
             {
                 wheelTransform.Rotate(wheelTransform.right, wheelCollider.perFrameRotation, Space.World);
             }
@@ -280,10 +281,8 @@ namespace KSPWheel
             fLong = wheelCollider.longitudinalForce;
             fLat = wheelCollider.lateralForce;
             comp = wheelCollider.compressionDistance;
-            if (debug)
-            {
-                MonoBehaviour.print("s/d: " + fSpring + " : " + fDamp);
-            }
+            
+            //if (debug) print("s/d: " + fSpring + " : " + fDamp);
         }
 
         public void OnValidate()
