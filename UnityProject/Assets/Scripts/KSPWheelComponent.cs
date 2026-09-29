@@ -9,7 +9,7 @@ namespace KSPWheel
     /// Not intended to be useful aside from the intial debugging period, or as a basic example that can be used in the editor; this class has no use in KSP
     /// </summary>
     [AddComponentMenu("Physics/KSPWheel")]
-    public class KSPWheelComponent : MonoBehaviour
+    public class KspWheelComponent : MonoBehaviour
     {
         #region REGION - Unity Editor Inspector Assignable Fields
 
@@ -155,20 +155,20 @@ namespace KSPWheel
 
         #endregion ENDREGION - Unity Editor Display Variables
 
-        private KSPWheelCollider wheelCollider;
+        private KSPWheelCollider _wheelCollider;
 
-        private float currentMotorTorque;
-        private float currentSteer;
-        private float currentBrakeTorque;
+        private float _currentMotorTorque;
+        private float _currentSteer;
+        private float _currentBrakeTorque;
 
-        private GameObject bumpStopCollider;
+        private GameObject _bumpStopCollider;
 
         public void Start()
         {
-            wheelCollider = gameObject.AddComponent<KSPWheelCollider>();
-            wheelCollider.rigidbody = this.rigidBody;
-            bumpStopCollider = new GameObject("BSC-" + wheelCollider.name);
-            var sc = bumpStopCollider.AddComponent<SphereCollider>();
+            _wheelCollider = gameObject.AddComponent<KSPWheelCollider>();
+            _wheelCollider.Rigid = this.rigidBody;
+            _bumpStopCollider = new GameObject("BSC-" + _wheelCollider.name);
+            var sc = _bumpStopCollider.AddComponent<SphereCollider>();
             var mat = new PhysicMaterial("TEST");
             mat.bounciness = 0.0f;
             mat.dynamicFriction = 0;
@@ -177,7 +177,7 @@ namespace KSPWheel
             OnValidate(); //manually call to set all current parameters into wheel collider object
         }
 
-        private void sampleInput()
+        private void SampleInput()
         {
             float left = Input.GetKey(KeyCode.A) ? -1 : 0;
             float right = Input.GetKey(KeyCode.D) ? 1 : 0;
@@ -210,7 +210,7 @@ namespace KSPWheel
                 }
             }
 
-            float rpm = wheelCollider.rpm;
+            float rpm = _wheelCollider.rpm;
             if (rpm >= rpmLimit && forwardInput > 0)
             {
                 forwardInput = 0;
@@ -220,93 +220,93 @@ namespace KSPWheel
                 forwardInput = 0;
             }
 
-            currentMotorTorque = Mathf.Lerp(currentMotorTorque, forwardInput * maxMotorTorque,
+            _currentMotorTorque = Mathf.Lerp(_currentMotorTorque, forwardInput * maxMotorTorque,
                 throttleResponse * Time.fixedDeltaTime);
-            if (forwardInput == 0 && Mathf.Abs(currentMotorTorque) < 0.25)
+            if (forwardInput == 0 && Mathf.Abs(_currentMotorTorque) < 0.25)
             {
-                currentMotorTorque = 0f;
+                _currentMotorTorque = 0f;
             }
 
-            currentSteer = Mathf.Lerp(currentSteer, turnInput * maxSteerAngle, steeringResponse * Time.fixedDeltaTime);
-            if (turnInput == 0 && Mathf.Abs(currentSteer) < 0.25)
+            _currentSteer = Mathf.Lerp(_currentSteer, turnInput * maxSteerAngle, steeringResponse * Time.fixedDeltaTime);
+            if (turnInput == 0 && Mathf.Abs(_currentSteer) < 0.25)
             {
-                currentSteer = 0f;
+                _currentSteer = 0f;
             }
 
-            currentBrakeTorque = Mathf.Lerp(currentBrakeTorque, brakeInput * maxBrakeTorque,
+            _currentBrakeTorque = Mathf.Lerp(_currentBrakeTorque, brakeInput * maxBrakeTorque,
                 brakeResponse * Time.fixedDeltaTime);
-            if (brakeInput == 0 && currentBrakeTorque < 0.25)
+            if (brakeInput == 0 && _currentBrakeTorque < 0.25)
             {
-                currentBrakeTorque = 0f;
+                _currentBrakeTorque = 0f;
             }
         }
 
         public void FixedUpdate()
         {
             Vector3 targetPos = suspLock ? transform.position - transform.up * suspensionLength : transform.position;
-            Vector3 pos = bumpStopCollider.transform.position;
+            Vector3 pos = _bumpStopCollider.transform.position;
             Vector3 p = Vector3.Lerp(pos, targetPos, Time.fixedDeltaTime);
-            bumpStopCollider.transform.position = p;
+            _bumpStopCollider.transform.position = p;
 
-            sampleInput();
-            wheelCollider.motorTorque = currentMotorTorque;
-            wheelCollider.steeringAngle = currentSteer;
-            wheelCollider.brakeTorque = currentBrakeTorque;
-            wheelCollider.updateWheel();
+            SampleInput();
+            _wheelCollider.motorTorque = _currentMotorTorque;
+            _wheelCollider.steeringAngle = _currentSteer;
+            _wheelCollider.brakeTorque = _currentBrakeTorque;
+            _wheelCollider.updateWheel();
             
             if (steeringTransform)
             {
-                steeringTransform.localRotation = Quaternion.AngleAxis(currentSteer, steeringTransform.up);
+                steeringTransform.localRotation = Quaternion.AngleAxis(_currentSteer, steeringTransform.up);
             }
 
             if (suspensionTransform)
             {
                 suspensionTransform.position = transform.position -
-                                               (suspensionLength - wheelCollider.compressionDistance) * transform.up;
+                                               (suspensionLength - _wheelCollider.compressionDistance) * transform.up;
             }
 
             if (wheelTransform)
             {
-                wheelTransform.Rotate(wheelTransform.right, wheelCollider.perFrameRotation, Space.World);
+                wheelTransform.Rotate(wheelTransform.right, _wheelCollider.perFrameRotation, Space.World);
             }
 
             Vector3 prevVel = localVelocity;
-            localVelocity = wheelCollider.wheelLocalVelocity;
+            localVelocity = _wheelCollider.wheelLocalVelocity;
             localAcceleration = (prevVel - localVelocity) / Time.fixedDeltaTime;
-            fSpring = wheelCollider.springForce;
-            fDamp = wheelCollider.dampForce;
-            rpm = wheelCollider.rpm;
-            sLong = wheelCollider.longitudinalSlip;
-            sLat = wheelCollider.lateralSlip;
-            fLong = wheelCollider.longitudinalForce;
-            fLat = wheelCollider.lateralForce;
-            comp = wheelCollider.compressionDistance;
+            fSpring = _wheelCollider.springForce;
+            fDamp = _wheelCollider.dampForce;
+            rpm = _wheelCollider.rpm;
+            sLong = _wheelCollider.longitudinalSlip;
+            sLat = _wheelCollider.lateralSlip;
+            fLong = _wheelCollider.longitudinalForce;
+            fLat = _wheelCollider.lateralForce;
+            comp = _wheelCollider.compressionDistance;
             
             //if (debug) print("s/d: " + fSpring + " : " + fDamp);
         }
 
         public void OnValidate()
         {
-            if (!wheelCollider) return;
+            if (!_wheelCollider) return;
             
-            wheelCollider.radius = wheelRadius;
-            wheelCollider.mass = wheelMass;
-            wheelCollider.length = suspensionLength;
-            wheelCollider.spring = spring;
-            wheelCollider.damper = damper;
-            wheelCollider.motorTorque = maxMotorTorque;
-            wheelCollider.brakeTorque = maxBrakeTorque;
-            wheelCollider.forwardFrictionCoefficient = forwardFrictionCoefficient;
-            wheelCollider.sideFrictionCoefficient = sideFrictionCoefficient;
-            wheelCollider.surfaceFrictionCoefficient = surfaceFrictionCoefficient;
-            wheelCollider.sweepType = sweepType;
-            wheelCollider.frictionModel = frictionModel;
+            _wheelCollider.radius = wheelRadius;
+            _wheelCollider.mass = wheelMass;
+            _wheelCollider.length = suspensionLength;
+            _wheelCollider.spring = spring;
+            _wheelCollider.damper = damper;
+            _wheelCollider.motorTorque = maxMotorTorque;
+            _wheelCollider.brakeTorque = maxBrakeTorque;
+            _wheelCollider.forwardFrictionCoefficient = forwardFrictionCoefficient;
+            _wheelCollider.sideFrictionCoefficient = sideFrictionCoefficient;
+            _wheelCollider.surfaceFrictionCoefficient = surfaceFrictionCoefficient;
+            _wheelCollider.sweepType = sweepType;
+            _wheelCollider.frictionModel = frictionModel;
 
-            var sc = bumpStopCollider.GetComponent<SphereCollider>();
-            bumpStopCollider.layer = 26;
+            var sc = _bumpStopCollider.GetComponent<SphereCollider>();
+            _bumpStopCollider.layer = 26;
             sc.radius = wheelRadius;
-            bumpStopCollider.transform.parent = transform;
-            bumpStopCollider.transform.localPosition = Vector3.zero;
+            _bumpStopCollider.transform.parent = transform;
+            _bumpStopCollider.transform.localPosition = Vector3.zero;
         }
 
         /// <summary>
@@ -319,9 +319,9 @@ namespace KSPWheel
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, wheelRadius);
             Vector3 pos2 = transform.position + -transform.up * suspensionLength;
-            if (wheelCollider != null)
+            if (_wheelCollider != null)
             {
-                pos2 += transform.up * wheelCollider.compressionDistance;
+                pos2 += transform.up * _wheelCollider.compressionDistance;
             }
 
             Gizmos.DrawWireSphere(pos2, wheelRadius);
